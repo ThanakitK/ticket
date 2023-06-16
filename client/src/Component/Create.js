@@ -15,7 +15,7 @@ export const Create = () => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [contact, setContact] = useState("");
-    const status = useState("pending");
+    const status = useState("");
     const create_at = useState("");
     const update_at = useState("");
 

@@ -25,35 +25,35 @@ app.get('/ticket', (req, res) =>{
     })
 })
 
-app.post('/create', (req, res)=>{
+app.post('/create', (req, res) => {
     const title = req.body.title;
     const description = req.body.description;
     const contact = req.body.contact;
-    const status = req.body.status;
-    const create_at = req.body.create;
-    const update_at = req.body.update;
-
-    db.query("INSERT INTO ticket (title, description, contact, status, create_at, update_at) VALUES(?,?,?,?,?)", [title, description, contact, status, create_at, update_at],
-    (err, result) =>{
+    const status = "pending";
+    const create_at = new Date();
+    const update_at = new Date();
+    db.query("INSERT INTO ticket (title, description, contact, status, create_at, update_at) VALUES (?, ?, ?, ?, ?, ?)", [title, description, contact, status, create_at, update_at],
+      (err, result) => {
         if (err) {
-            console.log(err);
-        }else{
-            res.send("Value inserted")
+          console.log(err);
+          res.status(500).send("Error inserting ticket");
+        } else {
+          res.send("Ticket inserted successfully");
         }
-    })
-})
-
+      }
+    );
+});
 
 app.put('/update', (req, res)=>{
-    const id = req.body.id;
+    const id = req.body.id+1;
     const contact = req.body.contact;
     const status = req.body.status;
-    const update_at = req.body.update_at;
-    db.query("UPDATE ticket SET contact = ?, status = ?, update_at = ? WHERE id = ?", [contact, status, update_at, id], (err, result)=>{
+    const update_at = new Date();
+    db.query("UPDATE ticket SET contact = ?, status = ?, update_at = ? WHERE id = ?", [contact, status, update_at, id], (err)=>{
         if(err){
             console.log(err);
         }else{
-            res.send(result);
+            res.send("Value update");
         }
     })
 })

@@ -4,6 +4,8 @@ import axios from 'axios'
 export const Table = () => {
   const [ticketList, setTicketList] = useState([]);
   const [editingIndex, setEditingIndex] = useState(-1);
+  const [contact, setContact] = useState("");
+  const [status, setStatus] = useState("");
   
   useEffect(() => {
     fetchData()
@@ -16,17 +18,25 @@ export const Table = () => {
   }
 
   const handleEditClick = (index) => {
+    const ticket = ticketList[index];
+    setContact(ticket.contact);
+    setStatus(ticket.status);
     setEditingIndex(index);
+    
   };
 
   const handleSaveClick = () => {
+    axios.put('http://localhost:3001/update', {id: editingIndex, contact: contact, status: status})
+      .then(() => {
+        setEditingIndex(-1);
+        fetchData();
+      })
     setEditingIndex(-1);
   };
 
   return (
     <div>
       <h1>Ticket table</h1>
-
       <table>
         <thead>
           <tr>
@@ -40,7 +50,14 @@ export const Table = () => {
         </thead>
         <tbody>
           {ticketList.map((val, key) => {
-            const format= new Date(val.create_at).toLocaleString('en-GB', {
+            const formatCreate= new Date(val.create_at).toLocaleString('en-GB', {
+              hour: '2-digit',
+              minute: '2-digit',
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric'
+            })
+            const formatUpdate= new Date(val.update_at).toLocaleString('en-GB', {
               hour: '2-digit',
               minute: '2-digit',
               day: '2-digit',
@@ -49,10 +66,10 @@ export const Table = () => {
             });
             if (editingIndex === key) {
               const selectedStatus =(e)=>{
-                val.status = e.target.value
+                setStatus(e.target.value);
               }
               const editContact =(e)=>{
-                val.contact = e.target.value
+                setContact(e.target.value)
               }
 
               return (
@@ -60,18 +77,18 @@ export const Table = () => {
                   <td>{val.title}</td>
                   <td>{val.description}</td>
                   <td>
-                    <input onChange={editContact} defaultValue={val.contact}></input>
+                    <input onChange={editContact} value={contact}></input>
                   </td>
                   <td>
-                    <select onChange={selectedStatus} defaultValue={val.status}>
+                    <select onChange={selectedStatus} value={status}>
                       <option value="pending">pending</option>
                       <option value="accepted">accepted</option>
                       <option value="resolved">resolved</option>
                       <option value="rejected">rejected</option>
                     </select>
                   </td>
-                  <td>{format}</td>
-                  <td>{val.update_at}</td>
+                  <td>{formatCreate}</td>
+                  <td>{formatUpdate}</td>
                   <button onClick={handleSaveClick}>save</button>
                 </tr>
               );
@@ -82,8 +99,8 @@ export const Table = () => {
                   <td>{val.description}</td>
                   <td>{val.contact}</td>
                   <td>{val.status}</td>
-                  <td>{format}</td>
-                  <td>{val.update_at}</td>
+                  <td>{formatCreate}</td>
+                  <td>{formatUpdate}</td>
                   <button onClick={() => handleEditClick(key)}>edit</button>
                 </tr>
               );
