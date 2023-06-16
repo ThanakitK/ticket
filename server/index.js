@@ -43,6 +43,20 @@ app.post('/create', (req, res)=>{
     })
 })
 
+
+app.put('/update', (req, res)=>{
+    const id = req.body.id;
+    const contact = req.body.contact;
+    const status = req.body.status;
+    const update_at = req.body.update_at;
+    db.query("UPDATE ticket SET contact = ?, status = ?, update_at = ? WHERE id = ?", [contact, status, update_at, id], (err, result)=>{
+        if(err){
+            console.log(err);
+        }else{
+            res.send(result);
+        }
+    })
+})
 app.listen('3001', () =>{
     console.log('Server is running on port 3001');
 })

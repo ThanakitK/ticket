@@ -3,7 +3,7 @@ import axios from 'axios'
 
 export const Table = () => {
   const [ticketList, setTicketList] = useState([]);
-  const [editing, setEditing] = useState(true);
+  const [editingIndex, setEditingIndex] = useState(-1);
   
   useEffect(() => {
     fetchData()
@@ -15,17 +15,18 @@ export const Table = () => {
     });
   }
 
-  const handleEditClick = () => {
-    setEditing(false);
+  const handleEditClick = (index) => {
+    setEditingIndex(index);
   };
 
   const handleSaveClick = () => {
-    setEditing(true);
+    setEditingIndex(-1);
   };
 
   return (
     <div>
       <h1>Ticket table</h1>
+
       <table>
         <thead>
           <tr>
@@ -46,7 +47,35 @@ export const Table = () => {
               month: '2-digit',
               year: 'numeric'
             });
-            if (editing) {
+            if (editingIndex === key) {
+              const selectedStatus =(e)=>{
+                val.status = e.target.value
+              }
+              const editContact =(e)=>{
+                val.contact = e.target.value
+              }
+
+              return (
+                <tr key={key}>
+                  <td>{val.title}</td>
+                  <td>{val.description}</td>
+                  <td>
+                    <input onChange={editContact} defaultValue={val.contact}></input>
+                  </td>
+                  <td>
+                    <select onChange={selectedStatus} defaultValue={val.status}>
+                      <option value="pending">pending</option>
+                      <option value="accepted">accepted</option>
+                      <option value="resolved">resolved</option>
+                      <option value="rejected">rejected</option>
+                    </select>
+                  </td>
+                  <td>{format}</td>
+                  <td>{val.update_at}</td>
+                  <button onClick={handleSaveClick}>save</button>
+                </tr>
+              );
+            }else{
               return (
                 <tr key={key}>
                   <td>{val.title}</td>
@@ -55,35 +84,14 @@ export const Table = () => {
                   <td>{val.status}</td>
                   <td>{format}</td>
                   <td>{val.update_at}</td>
-                  <button onClick={handleEditClick}>edit</button>
-                </tr>
-              );
-            }else{
-              return (
-                <tr key={key}>
-                  <td>{val.title}</td>
-                  <td>{val.description}</td>
-                  <td>
-                    <input value={val.contact}></input>
-                  </td>
-                  <td>
-                    <select value={val.status}>
-                      <option>pending</option>
-                      <option>accepted</option>
-                      <option>resolved</option>
-                      <option>rejected</option>
-                    </select>
-                  </td>
-                  <td>{format}</td>
-                  <td>{val.update_at}</td>
-                  <button onClick={handleSaveClick}>save</button>
+                  <button onClick={() => handleEditClick(key)}>edit</button>
                 </tr>
               );
             }
-            
           })}
         </tbody>
       </table>
+      <a href='/'>create</a>
     </div>
   );
 };
