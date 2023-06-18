@@ -25,6 +25,26 @@ app.get('/ticket', (req, res) =>{
     })
 })
 
+app.get('/ticket/status', (req, res) =>{
+    db.query("SELECT * FROM ticket ORDER BY status", (err, result)=>{
+        if (err) {
+            console.log(err);
+        }else{
+            res.send(result);
+        }
+    })
+})
+
+app.get('/ticket/update', (req, res) =>{
+    db.query("SELECT * FROM ticket ORDER BY update_at DESC", (err, result)=>{
+        if (err) {
+            console.log(err);
+        }else{
+            res.send(result);
+        }
+    })
+})
+
 app.post('/create', (req, res) => {
     const title = req.body.title;
     const description = req.body.description;

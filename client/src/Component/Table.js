@@ -6,15 +6,40 @@ export const Table = () => {
   const [editingIndex, setEditingIndex] = useState(-1);
   const [contact, setContact] = useState("");
   const [status, setStatus] = useState("");
+  const [sortTable, setSort] = useState("Id");
   
   useEffect(() => {
     fetchData()
   })
 
   const fetchData =()=>{
-    axios.get('http://localhost:3001/ticket').then((response) => {
-      setTicketList(response.data);
-    });
+    if (sortTable==="Id") {
+      axios.get('http://localhost:3001/ticket').then((response) => {
+        setTicketList(response.data);
+      });
+    }
+    else if (sortTable==="Update") {
+      axios.get('http://localhost:3001/ticket/update').then((response) => {
+        setTicketList(response.data);
+        console.log(response.data);
+      });
+    }
+    else if (sortTable==="Status") {
+      axios.get('http://localhost:3001/ticket/status').then((response) => {
+        setTicketList(response.data);
+      });
+    }
+  }
+
+  const sort =(e)=>{
+    if(e.target.value === "Id"){
+      setSort("Id")
+    }else if(e.target.value === "Status"){
+      setSort("Status")
+    }else if(e.target.value === "Update"){
+      setSort("Update")
+    }
+    fetchData()
   }
 
   const handleEditClick = (index) => {
@@ -37,6 +62,12 @@ export const Table = () => {
   return (
     <div>
       <h1>Ticket table</h1>
+      <label>sort by : </label>
+      <select onChange={sort}>
+        <option value="Id">Id</option>
+        <option value="Update">Update</option>
+        <option value="Status">Status</option>
+      </select>
       <table>
         <thead>
           <tr>
