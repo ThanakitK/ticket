@@ -1,3 +1,5 @@
+
+
 const express = require("express");
 
 const app = express();
@@ -15,35 +17,43 @@ const db = mysql.createConnection({
     database: "ticketSystem"
 })
 
-app.get('/ticket', (req, res) =>{
-    db.query("SELECT * FROM ticket", (err, result)=>{
-        if (err) {
-            console.log(err);
-        }else{
-            res.send(result);
-        }
-    })
-})
+app.get('/ticket', (req, res) => {
+    const sort = req.query.sort;
+    const filter = req.query.filter;
 
-app.get('/ticket/status', (req, res) =>{
-    db.query("SELECT * FROM ticket ORDER BY status", (err, result)=>{
-        if (err) {
-            console.log(err);
-        }else{
-            res.send(result);
-        }
-    })
-})
+    let query = "SELECT * FROM ticket";
 
-app.get('/ticket/update', (req, res) =>{
-    db.query("SELECT * FROM ticket ORDER BY update_at DESC", (err, result)=>{
+    if (filter !== "all") {
+        query += ` WHERE status = '${filter}'`;
+    }
+
+    query += ` ORDER BY ${sort}`;
+    if (sort === "update_at") {
+        query += " DESC";
+    }
+
+    
+    db.query(query, filter, (err, result) => {
         if (err) {
             console.log(err);
-        }else{
+            res.status(500).send("An error occurred");
+        } else {
             res.send(result);
         }
-    })
-})
+    });
+});
+
+
+
+// app.get('/ticket/update', (req, res) =>{
+//     db.query("SELECT * FROM ticket ORDER BY update_at DESC", (err, result)=>{
+//         if (err) {
+//             console.log(err);
+//         }else{
+//             res.send(result);
+//         }
+//     })
+// })
 
 app.post('/create', (req, res) => {
     const title = req.body.title;
